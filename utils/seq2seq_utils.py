@@ -15,6 +15,7 @@ def translate_sentence(
 
     text_to_indices = french_transform(tokens)
     sentence_tensor = torch.LongTensor(text_to_indices).unsqueeze(1).to(device)
+    print(sentence_tensor.size())
 
     # Build encoder hidden, cell state
     with torch.no_grad():
@@ -28,14 +29,14 @@ def translate_sentence(
         with torch.no_grad():
             output, hidden, cell = model.Decoder_LSTM(previous_word, hidden, cell)
             best_guess = output.argmax(1).item()
-
+        
         outputs.append(best_guess)
 
         # Model predicts it's the end of the sentence
         if output.argmax(1).item() == voc_english["<eos>"]:
             break
-
-    translated_sentence = [voc_english[idx] for idx in outputs]
+    
+    translated_sentence = [voc_english.itos[idx] for idx in outputs]
     return translated_sentence[1:]
 
 
